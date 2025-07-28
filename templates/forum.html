@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Форум</title>
+</head>
+<body>
+    <h1>Добро пожаловать на форум!</h1>
+
+    <form method="GET" action="{{ url_for('forum') }}">
+    <input type="text" name="search" placeholder="Поиск..." value="{{ search_query }}">
+    <button type="submit">Искать</button>
+    </form>
+    {% if current_user.is_authenticated %}
+        <br>
+        <a href="{{ url_for('create_post') }}">
+            <button>Создать пост</button>
+        </a>
+    {% endif %}
+
+    {% if search_query %}
+        <h2>Результаты поиска по "{{ search_query }}":</h2>
+    {% else %}
+        <h2>Все посты:</h2>
+    {% endif %}
+
+    {% for post in posts %}
+        <div>
+            <h2><a href="{{ url_for('post_detail', post_id=post.id) }}">{{ post.title }}</a></h2>
+            <p><strong>Автор:</strong> <a href="{{ url_for('view', owner=post.user_id) }}">{{ post.user.name }}</a></p>
+            <p><em>Дата: {{ post.created_date.strftime('%Y-%m-%d %H:%M:%S') }}</em></p>
+        </div>
+    {% else %}
+        <p>Посты не найдены.</p>
+    {% endfor %}
+
+    {% if search_query.startswith('@') %}
+        <h3>Комментарии:</h3>
+        {% if no_comments %}
+            <p>Комментарии не найдены.</p>
+        {% endif %}
+        {% for comment in comments %}
+            <div>
+                <p>{{ comment.content }}</p>
+                <p><strong>Автор:</strong> <a href="{{ url_for('view', owner=comment.user_id) }}">{{ comment.user.name }}</a></p>
+            </div>
+        {% else %}
+            <p>Комментарии не найдены.</p>
+        {% endfor %}
+    {% endif %}
+</body>
+</html>

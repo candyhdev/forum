@@ -1,0 +1,43 @@
+.container {
+    max-width: 800px;
+    margin: auto;
+    padding: 1rem;
+    font-family: Arial, sans-serif;
+}
+
+.main-title {
+    font-size: 2em;
+    margin-bottom: 1rem;
+}
+
+.comment-item {
+    border-left: 2px solid #ccc;
+    padding-left: 10px;
+    margin-top: 1rem;
+}
+
+.comment-content {
+    margin: 0.5rem 0;
+}
+
+.comment-input {
+    width: 100%;
+    height: 60px;
+    margin-bottom: 0.5rem;
+}
+
+button {
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.reply-form {
+    margin-top: 0.5rem;
+}
+
+.back-link {
+    display: inline-block;
+    margin-top: 2rem;
+    text-decoration: none;
+    color: #007bff;
+}

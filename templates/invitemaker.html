@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Создание инвайта</title>
+</head>
+<body>
+<div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+    <h1>Создание инвайта</h1>
+    {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="text" name="code" placeholder="Инвайт код" required><br>
+        <input type="number" name="rank" placeholder="Начальный ранг"><br>
+        <button type="submit">Создать</button>
+    </form>
+</body>
+</html>

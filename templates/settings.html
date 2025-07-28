@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <h1></h1>
+    <h1></h1>
+    {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+    {% if success %}<p style="color:#118805">{{ success }}</p>{% endif %}
+    <h3>Смена ника</h3>
+    <form method="POST">
+        <input type="text" name="name" value={{ current_user.name }} ><br>
+        <button type="submit">Сохранить ник</button>
+    </form>
+    <h3>Смена пароля</h3>
+    <form method="POST">
+        <input type="password" name="password" placeholder="Старый пароль" ><br>
+        <input type="password" name="password_new" placeholder="Новый пароль" autocomplete="new-password"><br>
+        <input type="password" name="password_new_confirm" placeholder="Еще раз" autocomplete="new-password"><br>
+        <button type="submit">Сменить пароль</button>
+    </form>
+</head>
+<body>
+
+</body>
+</html>

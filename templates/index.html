@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{{ title }}</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/matrix.css') }}">
+    <link rel="icon" href="static/img/logo.svg" type="image/svg+xml">
+</head>
+<div id="menu-container" class="menu-left"> <!-- Новый контейнер для меню -->
+        {% include 'menu.html' %}
+    </div>
+<body>
+    <canvas id="matrix"></canvas>
+
+    <h1 class="title">CandyH</h1>
+    <p class="title">Never fade <span id="clickable-word">away</span></p>
+
+    <script src="static/js/matrix.js"></script>
+</body>
+</html>

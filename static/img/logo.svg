@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="_Слой_1" data-name="Слой 1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 686.87 391.32">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_Безымянный_градиент_52);
+      }
+
+      .cls-1, .cls-2 {
+        stroke: #000;
+        stroke-miterlimit: 10;
+      }
+
+      .cls-2 {
+        fill: url(#_Безымянный_градиент_53);
+      }
+    </style>
+    <linearGradient id="_Безымянный_градиент_53" data-name="Безымянный градиент 53" x1="571.09" y1="183.19" x2="1.18" y2="353.1" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ac6928"/>
+      <stop offset=".66" stop-color="#a32d53"/>
+      <stop offset="1" stop-color="#a01366"/>
+    </linearGradient>
+    <linearGradient id="_Безымянный_градиент_52" data-name="Безымянный градиент 52" x1="543.01" y1="84.46" x2="-35.47" y2="256.93" gradientUnits="userSpaceOnUse">
+      <stop offset=".11" stop-color="#ac6928"/>
+      <stop offset=".93" stop-color="#a11a60"/>
+      <stop offset="1" stop-color="#a01366"/>
+    </linearGradient>
+  </defs>
+  <g>
+    <polyline class="cls-2" points="686.44 390.49 641.04 312.95 551.72 311.14 371.6 .97 284.99 140.21 371.46 282.05 298.55 284.09 242.74 203.78 127.06 390.49"/>
+    <polyline class="cls-1" points="100.08 390.07 344.45 .56 240.43 1.12 .43 391.06"/>
+  </g>
+  <g>
+    <path d="M50.53,355.38c7.72,0,7.73-12,0-12s-7.73,12,0,12h0Z"/>
+    <path d="M85.76,355c7.72,0,7.73-12,0-12s-7.73,12,0,12h0Z"/>
+    <path d="M54.21,374.7c10.15,2.15,19.71,3.4,29.49-.8,7.07-3.04.97-13.38-6.06-10.36-6.37,2.74-13.78.96-20.24-.41-7.53-1.6-10.75,9.97-3.19,11.57h0Z"/>
+  </g>
+</svg>

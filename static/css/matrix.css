@@ -1,0 +1,101 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    background-color: #000;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    color: #ff0000;
+    text-align: center;
+    position: relative; /* Добавлено */
+}
+
+/* Анимация для плавного появления текста */
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Стили заголовка */
+.title {
+    font-size: 48px;
+    letter-spacing: 4px;
+    color: #ff0000;
+    animation: fadeIn 2s ease-out;
+    margin-bottom: 10px;
+    position: relative; /* Чтобы текст был на переднем плане */
+    z-index: 2; /* Высокий z-index */
+}
+
+/* Стили подзаголовка */
+.subtitle {
+    font-size: 24px;
+    color: #ff4646;
+    animation: fadeIn 3s ease-out;
+    position: relative; /* Чтобы текст был на переднем плане */
+    z-index: 2; /* Высокий z-index */
+}
+
+/* Позиционирование канваса */
+#matrix {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1; /* Холст ниже заголовков */
+    background: black;
+}
+
+/* Эффект размытия для фона */
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.293), rgba(0, 0, 0, 1));
+    z-index: 0;
+}
+
+/* Плавный переход для цвета текста */
+h1, p {
+    transition: color 0.5s ease;
+}
+
+body:hover h1, body:hover p {
+    color: #cc0000;
+}
+
+/* Тонкие тени для текста */
+.title, .subtitle {
+    text-shadow: 0 0 5px rgb(255, 0, 0), 0 0 10px rgb(255, 0, 0);
+}
+/* Медленное мерцание заголовка */
+@keyframes glow {
+    0%, 100% {
+        text-shadow: 0 0 5px #ff0000, 0 0 20px #ff0000, 0 0 30px #ff0000;
+    }
+    50% {
+        text-shadow: 0 0 10px #ff0000, 0 0 30px #ff0000, 0 0 50px #ff0000;
+    }
+}
+
+.title {
+    animation: glow 3s infinite alternate;
+}

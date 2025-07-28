@@ -1,0 +1,11 @@
+{% macro render_comment(comment, current_user, admins) %}
+<div class="comment">
+    <p><strong>{{ comment.user.username }}</strong>: {{ comment.content }}</p>
+
+    {% if current_user.is_authenticated and (current_user.id == comment.user_id or current_user.rank >= admins) %}
+        <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}">
+            <button type="submit">Удалить</button>
+        </form>
+    {% endif %}
+</div>
+{% endmacro %}

@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="auto">
+<head>
+    <meta charset="UTF-8">
+    <title id="title">404 — Страница не найдена</title>
+    <script>
+        // Определение языка пользователя
+        function getPreferredLanguage() {
+            const urlLang = new URLSearchParams(window.location.search).get('lang');
+            const savedLang = localStorage.getItem('preferredLanguage');
+            const browserLang = navigator.language || navigator.userLanguage;
+            return urlLang || savedLang || browserLang;
+        }
+
+        // Установка языка страницы
+        function setPageLanguage() {
+            const lang = getPreferredLanguage().substring(0, 2);
+            const translations = {
+                'ru': {
+                    title: '404 — Страница не найдена',
+                    heading: '404 — Страница не найдена',
+                    message: 'Запрашиваемая страница не существует. Возможно, вы ошиблись в адресе.',
+                    homeLink: 'Вернуться на главную'
+                },
+                'en': {
+                    title: '404 - Page Not Found',
+                    heading: '404 - Page Not Found',
+                    message: 'The requested page does not exist. You may have mistyped the address.',
+                    homeLink: 'Return to homepage'
+                },
+                'es': {
+                    title: '404 - Página no encontrada',
+                    heading: '404 - Página no encontrada',
+                    message: 'La página solicitada no existe. Es posible que haya escrito mal la dirección.',
+                    homeLink: 'Volver a la página principal'
+                },
+                'fr': {
+                    title: '404 - Page non trouvée',
+                    heading: '404 - Page non trouvée',
+                    message: 'La page demandée n\'existe pas. Vous avez peut-être mal saisi l\'adresse.',
+                    homeLink: 'Retour à l\'accueil'
+                },
+                'de': {
+                    title: '404 - Seite nicht gefunden',
+                    heading: '404 - Seite nicht gefunden',
+                    message: 'Die angeforderte Seite existiert nicht. Möglicherweise haben Sie die Adresse falsch eingegeben.',
+                    homeLink: 'Zur Startseite zurückkehren'
+                }
+            };
+
+            const t = translations[lang] || translations['en'];
+            document.title = t.title;
+            document.getElementById('heading').textContent = t.heading;
+            document.getElementById('message').textContent = t.message;
+            document.getElementById('homeLink').textContent = t.homeLink;
+            document.documentElement.lang = lang;
+            localStorage.setItem('preferredLanguage', lang);
+        }
+
+        // Смена языка
+        function setLanguage(lang) {
+            localStorage.setItem('preferredLanguage', lang);
+            const url = new URL(window.location);
+            url.searchParams.set('lang', lang);
+            window.location.href = url.toString();
+        }
+
+        // Инициализация
+        window.addEventListener('DOMContentLoaded', setPageLanguage);
+    </script>
+</head>
+<body>
+    <h1 id="heading">404 — Страница не найдена</h1>
+    <p id="message">Запрашиваемая страница не существует. Возможно, вы ошиблись в адресе.</p>
+    <p><a href="/" id="homeLink">Вернуться на главную</a></p>
+
+    <div>
+
+        <a href="#" onclick="setLanguage('ru'); return false;">RU</a> |
+        <a href="#" onclick="setLanguage('en'); return false;">EN</a> |
+        <a href="#" onclick="setLanguage('es'); return false;">ES</a> |
+        <a href="#" onclick="setLanguage('fr'); return false;">FR</a> |
+        <a href="#" onclick="setLanguage('de'); return false;">DE</a>
+    </div>
+</body>
+</html>

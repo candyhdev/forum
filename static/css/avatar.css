@@ -1,0 +1,102 @@
+/* Основной стиль страницы */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1c1c1c; /* Темный фон */
+    color: #ffffff; /* Белый текст */
+    min-height: 100vh; /* Гарантируем, что body охватывает весь экран */
+    position: relative; /* Для корректного размещения псевдоэлемента */
+    display: flex; /* Устанавливаем flex-контейнер */
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center; /* Вертикальное центрирование */
+}
+
+body::before {
+    content: '';
+    position: fixed; /* Фиксируем фон, чтобы он не двигался при прокрутке */
+    inset: 0; /* Охватываем весь экран */
+    background: radial-gradient(
+        circle,
+        rgba(139, 0, 0, 0.5) 10%, /* Темный красный с низкой прозрачностью ближе к центру */
+        rgba(28, 28, 28, 1) 85%   /* Почти черный у краев */
+    );
+    filter: blur(10px); /* Умеренное размытие */
+    z-index: -1; /* Уводим фон за содержимое */
+}
+
+
+/* Контейнер загрузки */
+.upload-container {
+    background-color: rgba(42, 42, 42, 0.5); /* Полупрозрачный фон */
+    padding: 30px; /* Отступы внутри контейнера */
+    border-radius: 12px; /* Закругленные углы */
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Тень */
+    width: 300px; /* Ширина контейнера */
+    text-align: center; /* Центрирование текста */
+}
+
+/* Предпросмотр аватара */
+.avatar-preview {
+    margin-bottom: 20px; /* Отступ снизу */
+}
+
+.avatar-preview img {
+    width: 120px; /* Ширина аватара */
+    height: 120px; /* Высота аватара */
+    border-radius: 50%; /* Круглая форма аватара */
+    border: 3px solid rgba(230, 57, 70, 0.9); /* Цвет бордера, по умолчанию */
+    object-fit: cover; /* Сохранение пропорций изображения */
+    transition: box-shadow 0.3s ease, border 0.3s ease; /* Плавный переход для тени и бордера */
+}
+
+/* Кнопка выбора файла */
+.file-input {
+    position: relative;
+    margin-bottom: 20px; /* Отступ снизу */
+}
+
+.input-file {
+    width: .1px; /* Минимальная ширина для скрытия */
+    height: .1px; /* Минимальная высота для скрытия */
+    opacity: 0; /* Скрытие файла */
+    overflow: hidden; /* Скрытие переполнения */
+    position: absolute; /* Позиционирование */
+    z-index: -1; /* Подъем за кнопкой */
+}
+
+.upload-label {
+    display: inline-block; /* Визуальная кнопка */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    color: #ffffff; /* Белый текст */
+    background-color: rgba(230,57,70, 0.8); /* Цвет кнопки */
+    border-radius: 10px; /* Закругленные углы */
+    cursor: pointer; /* Указатель при наведении */
+    transition: background-color 0.3s ease; /* Плавный переход для фона */
+}
+
+.upload-label:hover {
+    background-color: rgba(214,40,57,0.9); /* Цвет кнопки при наведении */
+    transform: scale(1.05);
+
+}
+
+/* Кнопка отправки */
+.submit-button {
+    background-color: #5AAC7B; /* Цвет кнопки отправки */
+    color: #ffffff; /* Белый текст */
+    padding: 10px 20px; /* Отступы внутри кнопки */
+    border: none; /* Без границы */
+    border-radius: 10px; /* Закругленные углы */
+    cursor: pointer; /* Указатель при наведении */
+    transition: background-color 0.3s ease; /* Плавный переход для фона */
+}
+
+.submit-button:hover {
+    background-color: #4a9a6e; /* Цвет кнопки при наведении */
+    transform: scale(1.05);
+}
+
+.center {
+    text-align: center; /* Центрирование текста */
+}

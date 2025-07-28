@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Создать пост</title>
+    <style>
+        /* Стили для отображения картинки в тексте */
+        .paste-image {
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+<div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+    <h1>Создание поста</h1>
+    <form method="POST" action="{{ url_for('create_post') }}">
+        <label for="title">Заголовок:</label>
+        <input type="text" name="title" required><br><br>
+        <label for="content">Содержание:</label>
+        <textarea id="content" name="content" required></textarea><br><br>
+        <button type="submit">Создать пост</button>
+    </form>
+    <br><a href="{{ url_for('forum') }}">Назад на главную</a>
+
+    <script>
+        // Слушаем событие вставки
+        document.getElementById('content').addEventListener('paste', function(e) {
+            // Получаем вставленный элемент
+            var items = e.clipboardData.items;
+            for (var i = 0; i < items.length; i++) {
+                if (items[i].type.indexOf('image') !== -1) {
+                    // Это изображение, получаем его как Blob
+                    var blob = items[i].getAsFile();
+                    var reader = new FileReader();
+                    reader.onload = function(event) {
+                        // Конвертируем изображение в base64
+                        var imageUrl = event.target.result;
+
+                        // Вставляем картинку в поле ввода
+                        var imgTag = `<img src="${imageUrl}" class="paste-image">`;
+
+                        // Вставляем картинку на позицию курсора
+                        var contentArea = document.getElementById('content');
+                        var cursorPos = contentArea.selectionStart;
+                        var textBefore = contentArea.value.substring(0, cursorPos);
+                        var textAfter = contentArea.value.substring(cursorPos);
+
+                        // Вставляем изображение в текст
+                        contentArea.value = textBefore + imgTag + textAfter;
+                    };
+                    reader.readAsDataURL(blob); // Читаем изображение как base64
+                }
+            }
+        });
+    </script>
+</body>
+</html>

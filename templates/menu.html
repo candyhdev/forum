@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ title }}</title>
+    <style>
+        :root {
+            --menu-bg: rgba(20, 8, 10, 0.95);
+            --menu-text: #ffffff;
+            --menu-accent: #ff1744;
+            --menu-hover: #d50000;
+            --menu-shadow: rgba(255, 23, 68, 0.25);
+            --menu-glow: rgba(255, 23, 68, 0.15);
+            --menu-border: rgba(255, 23, 68, 0.2);
+        }
+
+        body {
+            
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        #menu-container {
+            position: fixed;
+            top: 0.75rem;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1000;
+            pointer-events: none;
+        }
+
+        .banner {
+            background-color: var(--menu-bg);
+            color: var(--menu-text);
+            padding: 0.5rem 1rem;
+            border-radius: 3rem;
+            display: inline-flex;
+            align-items: center;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 12px var(--menu-shadow),
+                       0 0 0 1px var(--menu-border),
+                       0 0 25px var(--menu-glow);
+            backdrop-filter: blur(10px);
+            pointer-events: auto;
+            min-width: 80px;
+            justify-content: center;
+        }
+
+        .banner:hover {
+            background-color: var(--menu-accent);
+            box-shadow: 0 4px 15px var(--menu-shadow),
+                       0 0 0 1px var(--menu-border),
+                       0 0 30px var(--menu-glow);
+        }
+
+        .menu-text {
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.01em;
+            opacity: 1;
+            transition: all 0.2s ease;
+        }
+
+        .banner:hover .menu-text {
+            opacity: 0;
+            transform: scale(0.9);
+            position: absolute;
+        }
+
+        .hidden {
+            display: none;
+            font-size: 0.875rem;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .banner:hover .hidden {
+            display: flex;
+            animation: fadeIn 0.2s ease forwards;
+        }
+
+        .hidden span {
+            cursor: pointer;
+            transition: all 0.15s ease;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+        }
+
+        .hidden span:hover {
+            background-color: var(--menu-hover);
+            transform: translateY(-1px);
+        }
+
+        .separator {
+            color: rgba(255, 255, 255, 0.4);
+            margin: 0 0.25rem;
+            font-weight: 300;
+        }
+
+        #loading-screen {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.95);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+
+        .loading-content {
+            text-align: center;
+            color: var(--menu-accent);
+            font-size: 1.25rem;
+            font-weight: 500;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @media (max-width: 640px) {
+            #menu-container {
+                top: 0.5rem;
+            }
+
+            .banner {
+                padding: 0.4rem 0.875rem;
+                font-size: 0.8125rem;
+                min-width: 70px;
+            }
+
+            .hidden span {
+                padding: 0.2rem 0.4rem;
+            }
+        }
+
+        @media (prefers-color-scheme: light) {
+            :root {
+                --menu-bg: rgba(255, 255, 255, 0.9);
+                --menu-text: #c2185b;
+                --menu-accent: #d50000;
+                --menu-hover: #ff1744;
+                --menu-shadow: rgba(213, 0, 0, 0.2);
+                --menu-glow: rgba(213, 0, 0, 0.1);
+                --menu-border: rgba(213, 0, 0, 0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+    {% if current_user.is_authenticated and current_user.rank < 0 %}
+    <div id="loading-screen">
+        <div class="loading-content">
+            <p>Access to the site is closed</p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div id="menu-container">
+        <div class="banner">
+            {% if current_user.is_authenticated and current_user.rank >= 0 %}
+                <span class="menu-text" onclick="location.href='{{ url_for('settings') }}'">{{ current_user.name }}</span>
+                <div class="hidden">
+                    <span onclick="location.href='{{ url_for('settings') }}'">{{ current_user.name }}</span>
+
+                    <span onclick="location.href='{{ url_for('logout') }}'">Logout</span>
+                </div>
+            {% else %}
+                <span class="menu-text">...</span>
+                <div class="hidden">
+                    <span onclick="location.href='{{ url_for('login') }}'">Login</span>
+
+                    <span onclick="location.href='{{ url_for('register') }}'">Register</span>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.querySelectorAll('.banner span[onclick]').forEach(element => {
+            element.addEventListener('click', (e) => {
+                e.preventDefault();
+                const href = element.getAttribute('onclick').match(/'([^']+)'/)[1];
+                window.location.href = href;
+            });
+        });
+    </script>
+</body>
+</html>

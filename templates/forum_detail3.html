@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ post.title }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml" />
+    <style>
+        .reply-comment {
+            margin-left: 5px;
+            border-left: 2px solid #ccc;
+            padding-left: 10px;
+            margin-top: 10px;
+        }
+        .comment-item {
+            margin-bottom: 15px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .post-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+        }
+        .reply-button {
+            margin-top: 5px;
+            font-size: 0.9em;
+            cursor: pointer;
+            color: #007bff;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+        .reply-button:hover {
+            text-decoration: underline;
+        }
+        #cancel-reply {
+            margin-left: 10px;
+        }
+        .comment-content.reply {
+            font-style: italic;
+            margin-top: 5px;
+        }
+        .toggle-replies-btn {
+            cursor: pointer;
+            font-size: 0.85em;
+            color: #007bff;
+            background: none;
+            border: none;
+            padding: 0;
+            margin-top: 5px;
+            display: inline-block;
+        }
+        .toggle-replies-btn:hover {
+            text-decoration: underline;
+        }
+        .replies-container {
+            display: none;
+        }
+        .comment-reply-separator {
+            border-top: 1px solid #ccc;
+            margin: 8px 0;
+        }
+        .comment-item > p em {
+            margin-bottom: 2px;
+            display: block;
+        }
+        .comment-content {
+            white-space: pre-wrap;
+            margin-top: 0;
+            margin-bottom: 0.3em;
+        }
+        @keyframes highlight {
+            0% { background-color: #ffff99; }
+            100% { background-color: transparent; }
+        }
+        .highlighted-comment {
+            animation: highlight 3s ease forwards;
+        }
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .comment-author-line,
+        .post-author-line {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+
+    <div class="container">
+        <div class="post-section">
+            <p class="post-author-line">
+                <img src="{{ url_for('static', filename='img/up/' ~ post.user.id ~ '.gif') }}" alt="Аватар" class="avatar">
+                <strong>Автор:</strong>
+                <a href="{{ url_for('view', owner=post.user_id) }}" class="{{ 'post-author-admin' if post.user.rank >= admins else 'post-author' }}">
+                    {{ post.user.name }}
+                </a>
+            </p>
+            <h1 class="main-title">{{ post.title }}</h1>
+            <p class="post-content">{{ post.content | e }}</p>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.id == post.user_id or current_user.rank >= admins %}
+                <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" class="delete-form">
+                    <button type="submit" class="delete-button">Удалить пост</button>
+                </form>
+                <form action="{{ url_for('edit_post', id=post.id) }}" class="delete-form">
+                    <button type="submit" class="delete-button">Редактировать пост</button>
+                </form>
+            {% endif %}
+        {% endif %}
+
+        <h2 class="comments-title">Комментарии:</h2>
+
+        <div class="comments-container">
+            {% macro render_comment(comment) %}
+                <div class="comment-item" id="comment-{{ comment.id }}">
+                    {% if comment.parent %}
+                        <p class="comment-author-line">
+                            <img src="{{ url_for('static', filename='img/up/' ~ comment.parent.user.id ~ '.gif') }}" alt="Аватар" class="avatar">
+                            <em>{{ comment.parent.user.name }} сказал:</em>
+                        </p>
+                        <p class="comment-content reply">{{ comment.content }}</p>
+                        <div class="comment-reply-separator"></div>
+                        <p class="comment-author-line">
+                            <img src="{{ url_for('static', filename='img/up/' ~ comment.user.id ~ '.gif') }}" alt="Аватар" class="avatar">
+                            <strong>Автор:</strong>
+                            <a href="{{ url_for('view', owner=comment.user_id) }}" class="comment-author">{{ comment.user.name }}</a>
+                        </p>
+                        <p class="comment-content">{{ comment.content }}</p>
+                    {% else %}
+                        <p class="comment-author-line">
+                            <img src="{{ url_for('static', filename='img/up/' ~ comment.user.id ~ '.gif') }}" alt="Аватар" class="avatar">
+                            <strong>Автор:</strong>
+                            <a href="{{ url_for('view', owner=comment.user_id) }}" class="comment-author">{{ comment.user.name }}</a>
+                        </p>
+                        <p class="comment-content">{{ comment.content }}</p>
+                    {% endif %}
+
+                    {% if current_user.is_authenticated %}
+                        {% if current_user.id == comment.user_id or current_user.rank >= admins %}
+                            <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}" class="delete-form" style="display:inline-block;">
+                                <button type="submit" class="delete-button-com">Удалить</button>
+                            </form>
+                        {% endif %}
+                        <button class="reply-button" data-comment-id="{{ comment.id }}" data-comment-author="{{ comment.user.name }}">Ответить</button>
+                    {% endif %}
+
+                    {% set replies = comment.replies.order_by(Comment.created_date.asc()).all() %}
+                    {% if replies %}
+                        <button class="toggle-replies-btn" data-target="replies-{{ comment.id }}">Показать ответы ({{ replies|length }})</button>
+                        <div class="replies-container" id="replies-{{ comment.id }}">
+                            {% for reply in replies %}
+                                <div class="reply-comment">
+                                    {{ render_comment(reply) }}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endmacro %}
+
+            {% set root_comments = comments | selectattr("parent", "equalto", None) | list %}
+            {% if root_comments %}
+                {% for comment in root_comments %}
+                    {{ render_comment(comment) }}
+                {% endfor %}
+            {% else %}
+                <p class="no-comments">Комментариев еще нет.</p>
+            {% endif %}
+        </div>
+
+        {% if current_user.is_authenticated %}
+        <div class="add-comment-section">
+            <h3 class="add-comment-title">Добавить комментарий:</h3>
+            <form method="POST" action="{{ url_for('post_detail', post_id=post.id) }}" class="comment-form" id="comment-form">
+                <textarea name="content" placeholder="Ваш комментарий" required class="comment-input" rows="4"></textarea>
+                <input type="hidden" name="parent_id" id="parent_id" value="" />
+                <button type="submit" class="submit-comment-button">Отправить</button>
+                <button type="button" id="cancel-reply" style="display:none;">Отмена ответа</button>
+            </form>
+        </div>
+        {% endif %}
+
+        <a href="{{ url_for('forum') }}" class="back-link">Назад на главную</a>
+    </div>
+
+<script>
+    const replyToCommentId = "{{ reply_to }}";
+
+    document.addEventListener("DOMContentLoaded", function() {
+        const postContent = document.querySelector('.post-content');
+        const content = postContent.innerHTML;
+        const imagePattern = /(https?:\/\/[^\s]+(?:\.(?:jpg|jpeg|png|gif|bmp|webp|svg))(\?[^\s]*)?)/gi;
+        const base64Pattern = /data:image\/(?:jpeg|png|gif|bmp|webp|svg\+xml);base64,[^\s]+/gi;
+
+        let updatedContent = content.replace(imagePattern, '<img src="$1" alt="Image" class="post-image">');
+        updatedContent = updatedContent.replace(base64Pattern, '<img src="$&" alt="Base64 Image" class="post-image">');
+
+        updatedContent = updatedContent.replace(/(https?:\/\/[^\s]+)/gi, function(match) {
+            if (match.match(imagePattern) || match.match(base64Pattern)) {
+                return match;
+            }
+            return `<a href="${match}" target="_blank">${match}</a>`;
+        });
+
+        postContent.innerHTML = updatedContent;
+
+        const replyButtons = document.querySelectorAll('.reply-button');
+        const parentInput = document.getElementById('parent_id');
+        const commentForm = document.getElementById('comment-form');
+        const cancelReplyBtn = document.getElementById('cancel-reply');
+        const textarea = commentForm.querySelector('textarea[name="content"]');
+
+        replyButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const commentId = button.getAttribute('data-comment-id');
+                parentInput.value = commentId;
+                textarea.focus();
+                cancelReplyBtn.style.display = 'inline-block';
+            });
+        });
+
+        cancelReplyBtn.addEventListener('click', () => {
+            parentInput.value = '';
+            textarea.value = '';
+            cancelReplyBtn.style.display = 'none';
+            textarea.focus();
+        });
+
+        function findParentComment(el) {
+            let parent = el.parentElement;
+            while (parent && !parent.classList.contains('comment-item')) {
+                parent = parent.parentElement;
+            }
+            return parent;
+        }
+
+        function expandAllParents(commentId) {
+            let currentComment = document.getElementById(`comment-${commentId}`);
+            while (currentComment) {
+                let repliesContainer = currentComment.querySelector(`.replies-container`);
+                if (repliesContainer) {
+                    repliesContainer.style.display = 'block';
+                    const toggleBtn = document.querySelector(`.toggle-replies-btn[data-target="${repliesContainer.id}"]`);
+                    if (toggleBtn) {
+                        toggleBtn.textContent = `Скрыть ответы (${repliesContainer.children.length})`;
+                    }
+                }
+                currentComment = findParentComment(currentComment);
+            }
+        }
+
+        document.querySelectorAll('.toggle-replies-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const targetId = button.getAttribute('data-target');
+                const container = document.getElementById(targetId);
+                if (container.style.display === 'block') {
+                    container.style.display = 'none';
+                    button.textContent = `Показать ответы (${container.children.length})`;
+                } else {
+                    container.style.display = 'block';
+                    button.textContent = `Скрыть ответы (${container.children.length})`;
+                }
+            });
+        });
+
+        if (replyToCommentId) {
+            expandAllParents(replyToCommentId);
+            const targetComment = document.getElementById(`comment-${replyToCommentId}`);
+            if (targetComment) {
+                const yOffset = window.innerHeight / 4;
+                const y = targetComment.getBoundingClientRect().top + window.pageYOffset - yOffset;
+                window.scrollTo({ top: y, behavior: 'smooth' });
+                targetComment.classList.add('highlighted-comment');
+                setTimeout(() => {
+                    targetComment.classList.remove('highlighted-comment');
+                }, 3000);
+            }
+        }
+    });
+</script>
+</body>
+</html>

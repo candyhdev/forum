@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Регистрация</title>
+</head>
+<body>
+<div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+    <h1>Регистрация</h1>
+    {% if error %}<p style="color:red">{{ error }}</p>{% endif %}
+    <form method="POST">
+        <input type="email" name="email" placeholder="Почта" required><br>
+        <input type="password" name="password" placeholder="Пароль" required autocomplete="new-password"><br>
+        <input type="password" name="confirm" placeholder="Подтвердите пароль" required autocomplete="new-password"><br>
+        {% if inv %}<input type="text" name="invite" placeholder="Код приглашения" required><br>{% endif %}
+        <button type="submit">Зарегистрироваться</button>
+    </form>
+    <p><a href="{{ url_for('login') }}">Уже есть аккаунт?</a></p>
+</body>
+</html>

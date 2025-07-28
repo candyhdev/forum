@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <title>Flask + Vue Save</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+</head>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen">
+  <div id="app"
+       class="text-center bg-gray-800 p-6 rounded shadow-xl max-w-sm w-full"
+       data-initial-count="{{ count }}">
+
+    <h1 class="text-2xl font-bold mb-4">Привет из Vue + Flask 👋</h1>
+    <p class="text-lg mb-4">
+      Счётчик: <span class="font-mono">{{ '{{ count }}' }}</span>
+    </p>
+    <button @click="increase"
+            class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded transition">
+      Увеличить
+    </button>
+  </div>
+
+  <script>
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        const initial = document.getElementById('app').dataset.initialCount;
+        return {
+          count: parseInt(initial)
+        };
+      },
+      methods: {
+        increase() {
+          this.count++;
+          // Отправляем обновлённое значение на сервер
+          fetch('/update_count', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ count: this.count })
+          }).then(res => res.json())
+            .then(data => {
+              if (!data.success) {
+                alert('Ошибка при сохранении');
+              }
+            });
+        }
+      }
+    }).mount('#app');
+  </script>
+</body>
+</html>

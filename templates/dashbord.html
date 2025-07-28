@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Личный кабинет</title>
+</head>
+<body>
+<div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+    <h1>Привет, {{ user.name }}!</h1>
+
+    {% if user.verified %}
+        <p>✅ Ваш аккаунт подтверждён через Discord.</p>
+    {% else %}
+        <p>⚠ Ваш аккаунт не подтверждён. <a href="{{ url_for('verify_discord') }}">Подтвердить через Discord</a></p>
+    {% endif %}
+
+    <a href="{{ url_for('forum') }}">Форум</a>
+    <a href="{{ url_for('logout') }}">Выйти</a>
+</body>
+</html>

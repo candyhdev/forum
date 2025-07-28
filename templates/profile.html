@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/profile.css') }}">
+    <link rel="icon" href="../static/img/logo.svg" type="image/svg+xml">
+    <title>User profile</title>
+</head>
+<body>
+<div id="loading-screen">
+        <div class="loading-content">
+            <img
+    src="/static/img/loading-icon.png"
+    alt="Loading Icon"
+    class="loading-image"
+    style="width: 80px; height: 80px; visibility: hidden;">
+            <p class="loading-text">Loading, please wait...</p>
+        </div>
+    </div>
+<canvas id="canvas" style="display: none;"></canvas>
+    <div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+    <div class="profile-container">
+        <div class="profile-banner">
+            <img src="/static/img/ranks/{{ access[4] }}.gif" alt="Banner" class="banner-image">
+            <div class="overlay"></div>
+        </div>
+        <div class="avatar-section">
+            {% if avatar_exists %}
+                <img src="/static/img/up/{{ access[0] }}.gif" alt="Avatar" class="avatar">
+            {% else %}
+                <img src="/static/img/default_avatar.jpeg" alt="Def avatar" class="avatar"> <!-- Дефолтный аватар -->
+            {% endif %}
+            {% if access[0] == user.id %}
+            <button class="change-avatar-button" onclick="window.location.href='/avatar'">Change avatar</button>
+            {% endif %}
+        </div>
+        <div class="user-info">
+            <span class="username">{{ access[1] }}</span>
+            <img src="/static/img/badge/rank-{{ access[7] }}.png" alt="" class="icon">
+            {% if access[3] == 0 %}
+            <p class="rank">Rank: Newbie</p>
+            {% elif access[3] == 1 %}
+            <p class="rank">Rank: Access</p>
+            {% elif access[3] == 2 %}
+            <p class="rank">Rank: Premium</p>
+            {% elif admin + 2 >= access[3] >= admin %}
+            <p class="rank">Rank: Moderator</p>
+            {% elif sys > access[3] > admin + 2 %}
+            <p class="rank">Rank: Administrator</p>
+            {% elif sys == access[3] %}
+            <p class="rank">Rank: System</p>
+            {% endif %}
+            <p class="description">{{ access[2] }}</p>
+        </div>
+    </div>
+</body>
+<script>
+    const avatar = document.querySelector('.avatar'); // Убираем повторное объявление переменной
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+
+    function getAverageColor(img) {
+        canvas.width = img.width;
+        canvas.height = img.height;
+        ctx.drawImage(img, 0, 0);
+
+        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imageData.data;
+
+        let r = 0, g = 0, b = 0, count = 0;
+
+        for (let i = 0; i < data.length; i += 4) {
+            r += data[i];     // Red
+            g += data[i + 1]; // Green
+            b += data[i + 2]; // Blue
+            count++;
+        }
+
+        r = Math.floor(r / count);
+        g = Math.floor(g / count);
+        b = Math.floor(b / count);
+
+        return `rgba(${r}, ${g}, ${b}, 0.7)`; // Возвращаем цвет с прозрачностью
+    }
+
+    function setAvatarShadow() {
+        const img = new Image();
+        img.src = avatar.src; // Устанавливаем источник изображения аватарки
+
+        img.onload = () => {
+            const shadowColor = getAverageColor(img);
+            console.log('Средний цвет:', shadowColor); // Проверка возвращаемого цвета
+            avatar.style.boxShadow = `0 0 15px ${shadowColor}, 0 0 30px ${shadowColor}`;
+            avatar.style.border = `3px solid ${shadowColor}`; // Устанавливаем цвет бордера
+        };
+    }
+
+    // Вызовите setAvatarShadow() при загрузке аватара
+    avatar.onload = setAvatarShadow;
+
+    // Проверяем, загружено ли изображение уже
+    if (avatar.complete) {
+        setAvatarShadow();
+    }
+
+    const profileContainer = document.querySelector('.profile-container');
+
+// Обработчик движения мыши внутри контейнера
+profileContainer.addEventListener('mousemove', (event) => {
+    const rect = profileContainer.getBoundingClientRect();
+    const x = event.clientX - rect.left; // Координаты X внутри контейнера
+    const y = event.clientY - rect.top;  // Координаты Y внутри контейнера
+
+    const centerX = rect.width / 2;  // Центр контейнера по оси X
+    const centerY = rect.height / 2; // Центр контейнера по оси Y
+
+    const rotateX = -(y - centerY) / 15; // Угол наклона по X
+    const rotateY = (x - centerX) / 15;  // Угол наклона по Y
+
+    profileContainer.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
+});
+
+// Обработчик выхода мыши за пределы контейнера
+profileContainer.addEventListener('mouseleave', () => {
+    profileContainer.style.transform = 'perspective(1000px) rotateX(0) rotateY(0)';
+});
+
+
+</script>
+{% if not user.is_authenticated %}
+<script src="../static/js/loadsc.js"></script>
+{% elif user.rank >= 0 %}
+<script src="../static/js/loadsc.js"></script>
+{% endif %}
+
+</html>

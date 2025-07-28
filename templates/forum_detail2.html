@@ -1,0 +1,887 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{{ post.title }}</title>
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml" />
+    <style>
+        /* Reddit-style CSS */
+        :root {
+            --reddit-orange: #FF4500;
+            --reddit-blue: #0079D3;
+            --reddit-light-gray: #F8F9FA;
+            --reddit-border: #EDEFF1;
+            --reddit-text: #1A1A1B;
+            --reddit-text-secondary: #7C7C7C;
+            --reddit-upvoted: #FF4500;
+            --reddit-downvoted: #7193FF;
+            --reddit-mod-green: #46D160;
+            --reddit-admin-red: #FF585B;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: #DAE0E6;
+            color: var(--reddit-text);
+            line-height: 1.5;
+            font-size: 14px;
+            padding-bottom: 30px;
+        }
+
+        a {
+            color: var(--reddit-blue);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+
+        /* Header and menu */
+        #menu-container {
+            background-color: white;
+            border-bottom: 1px solid var(--reddit-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .main-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 0;
+            padding: 8px 0;
+            color: var(--reddit-text);
+        }
+
+        /* Post section */
+        .post-section {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 16px;
+            padding: 16px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: flex-start;
+        }
+
+        .post-voting {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 10px;
+            min-width: 40px;
+        }
+
+        .vote-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #878A8C;
+            font-size: 24px;
+            line-height: 24px;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .vote-button:hover {
+            color: var(--reddit-orange);
+        }
+
+        .vote-button.upvoted {
+            color: var(--reddit-upvoted);
+        }
+
+        .vote-button.downvoted {
+            color: var(--reddit-downvoted);
+        }
+
+        .vote-count {
+            font-size: 13px;
+            font-weight: 600;
+            margin: 4px 0;
+        }
+
+        .post-content-wrapper {
+            flex-grow: 1;
+        }
+
+        .post-title {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--reddit-text);
+        }
+
+        .post-metadata {
+            color: var(--reddit-text-secondary);
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+
+        .post-author {
+            color: var(--reddit-text-secondary);
+            font-weight: 500;
+        }
+
+        .post-author-admin {
+            color: var(--reddit-admin-red);
+            font-weight: 500;
+        }
+
+        .post-content {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 12px 0;
+            word-break: break-word;
+            white-space: pre-wrap;
+        }
+
+        .post-image {
+            max-width: 100%;
+            height: auto;
+            display: block;
+            margin: 10px 0;
+            border-radius: 4px;
+        }
+
+        /* Post actions */
+        .post-actions {
+            display: flex;
+            margin-top: 10px;
+        }
+
+        .post-action-button {
+            background: none;
+            border: none;
+            color: var(--reddit-text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 16px;
+            padding: 4px 8px;
+            border-radius: 2px;
+        }
+
+        .post-action-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        .post-action-icon {
+            margin-right: 6px;
+        }
+
+        /* Comments section */
+        .comments-section {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            padding: 16px;
+        }
+
+        .comments-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 16px;
+            border-bottom: 1px solid var(--reddit-border);
+            padding-bottom: 8px;
+        }
+
+        /* Comment styling */
+        .comment-item {
+            position: relative;
+            margin-bottom: 8px;
+            padding: 8px 0;
+            border-radius: 4px;
+        }
+
+        .comment-container {
+            display: flex;
+        }
+
+        .comment-voting {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-right: 10px;
+            min-width: 30px;
+        }
+
+        .comment-vote-button {
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #878A8C;
+            font-size: 16px;
+            line-height: 16px;
+            padding: 0;
+            transition: color 0.2s;
+        }
+
+        .comment-vote-button:hover {
+            color: var(--reddit-orange);
+        }
+
+        .comment-vote-count {
+            font-size: 12px;
+            font-weight: 600;
+            margin: 2px 0;
+        }
+
+        .comment-body {
+            flex: 1;
+        }
+
+        .comment-metadata {
+            color: var(--reddit-text-secondary);
+            font-size: 12px;
+            margin-bottom: 4px;
+        }
+
+        .comment-author {
+            font-weight: 500;
+            color: var(--reddit-text);
+        }
+
+        .comment-author.admin {
+            color: var(--reddit-admin-red);
+        }
+
+        .comment-content {
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 4px 0 8px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .comment-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .comment-action-button {
+            background: none;
+            border: none;
+            color: var(--reddit-text-secondary);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .comment-action-button:hover {
+            color: var(--reddit-text);
+        }
+
+        .reply-button {
+            margin: 0;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--reddit-text-secondary);
+            cursor: pointer;
+            background: none;
+            border: none;
+            padding: 0;
+        }
+
+        .reply-button:hover {
+            color: var(--reddit-text);
+        }
+
+        .delete-button-com {
+            color: #FF585B;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 500;
+            padding: 0;
+            margin-right: 8px;
+        }
+
+        .delete-button-com:hover {
+            color: #E83A3D;
+            text-decoration: underline;
+        }
+
+        /* Reply threading */
+        .reply-comment {
+            margin-left: 20px;
+            position: relative;
+        }
+
+        .comment-thread-line {
+            position: absolute;
+            left: -10px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background-color: var(--reddit-border);
+        }
+
+        /* Toggle replies button */
+        .toggle-replies-btn {
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--reddit-blue);
+            background: none;
+            border: none;
+            padding: 0;
+            margin-left: 8px;
+        }
+
+        .toggle-replies-btn:hover {
+            text-decoration: underline;
+        }
+
+        /* Replies container */
+        .replies-container {
+            display: none;
+            margin-top: 8px;
+        }
+
+        /* Comment reply separator */
+        .comment-reply-separator {
+            border-top: 1px solid var(--reddit-border);
+            margin: 8px 0;
+        }
+
+        .comment-content.reply {
+            color: var(--reddit-text);
+            background-color: rgba(0, 0, 0, 0.02);
+            padding: 8px;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            border-left: 2px solid var(--reddit-blue);
+        }
+
+        /* Comment highlight animation */
+        @keyframes highlight {
+            0% { background-color: rgba(255, 69, 0, 0.2); }
+            100% { background-color: transparent; }
+        }
+
+        .highlighted-comment {
+            animation: highlight 3s ease forwards;
+        }
+
+        /* Add comment section */
+        .add-comment-section {
+            background-color: white;
+            border-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-top: 16px;
+            padding: 16px;
+        }
+
+        .add-comment-title {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: var(--reddit-text);
+        }
+
+        .comment-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .comment-input {
+            border: 1px solid var(--reddit-border);
+            border-radius: 4px;
+            padding: 10px;
+            font-size: 14px;
+            margin-bottom: 10px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .comment-input:focus {
+            border-color: var(--reddit-blue);
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(0, 121, 211, 0.2);
+        }
+
+        .submit-comment-button {
+            align-self: flex-start;
+            background-color: var(--reddit-orange);
+            border: none;
+            border-radius: 4px;
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 8px 16px;
+            transition: background-color 0.2s;
+        }
+
+        .submit-comment-button:hover {
+            background-color: #E03D00;
+        }
+
+        #cancel-reply {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            color: var(--reddit-text-secondary);
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            padding: 8px 16px;
+            margin-left: 8px;
+            border-radius: 4px;
+        }
+
+        #cancel-reply:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Post actions buttons */
+        .post-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        .delete-form {
+            display: inline-block;
+        }
+
+        .delete-button, .edit-button {
+            background-color: white;
+            border: 1px solid var(--reddit-border);
+            border-radius: 4px;
+            color: var(--reddit-text);
+            cursor: pointer;
+            font-size: 12px;
+            font-weight: 600;
+            padding: 6px 12px;
+            transition: background-color 0.2s;
+        }
+
+        .delete-button {
+            color: #FF585B;
+        }
+
+        .delete-button:hover {
+            background-color: rgba(255, 88, 91, 0.1);
+        }
+
+        .edit-button:hover {
+            background-color: rgba(0, 0, 0, 0.05);
+        }
+
+        /* Back link */
+        .back-link {
+            display: inline-block;
+            margin-top: 16px;
+            color: var(--reddit-blue);
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        /* No comments message */
+        .no-comments {
+            color: var(--reddit-text-secondary);
+            font-style: italic;
+            margin: 16px 0;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 0 8px;
+            }
+
+            .post-section,
+            .comments-section,
+            .add-comment-section {
+                padding: 12px;
+            }
+
+            .post-title {
+                font-size: 18px;
+            }
+
+            .comment-actions {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .reply-comment {
+                margin-left: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .post-voting,
+            .comment-voting {
+                margin-right: 6px;
+                min-width: 24px;
+            }
+
+            .vote-button {
+                font-size: 18px;
+                line-height: 18px;
+            }
+
+            .post-metadata,
+            .comment-metadata {
+                font-size: 11px;
+            }
+
+            .reply-comment {
+                margin-left: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+
+    <div class="container">
+        <div class="post-section">
+            <div class="post-header">
+                <div class="post-voting">
+                    <button class="vote-button upvote" title="Upvote">▲</button>
+                    <span class="vote-count">{{ post.votes|default(0) }}</span>
+                    <button class="vote-button downvote" title="Downvote">▼</button>
+                </div>
+
+                <div class="post-content-wrapper">
+                    <h1 class="post-title">{{ post.title }}</h1>
+                    <div class="post-metadata">
+                        {% if post.user.rank >= admins %}
+                            <span>Posted by <a href="{{ url_for('view', owner=post.user_id) }}" class="post-author-admin">u/{{ post.user.name }}</a></span>
+                        {% else %}
+                            <span>Posted by <a href="{{ url_for('view', owner=post.user_id) }}" class="post-author">u/{{ post.user.name }}</a></span>
+                        {% endif %}
+                        <span> • {{ post.created_date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                    </div>
+
+                    <div class="post-content">{{ post.content | e }}</div>
+
+                    <div class="post-actions">
+                        <button class="post-action-button">
+                            <span class="post-action-icon">💬</span>
+                            <span class="post-action-text">{{ comments|selectattr("parent", "equalto", None)|list|length }} Comments</span>
+                        </button>
+                        <button class="post-action-button">
+                            <span class="post-action-icon">↗️</span>
+                            <span class="post-action-text">Share</span>
+                        </button>
+                        <button class="post-action-button">
+                            <span class="post-action-icon">🔖</span>
+                            <span class="post-action-text">Save</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {% if current_user.is_authenticated %}
+            {% if current_user.id == post.user_id or current_user.rank >= admins %}
+                <div class="post-buttons">
+                    <form method="POST" action="{{ url_for('delete_post', post_id=post.id) }}" class="delete-form">
+                        <button type="submit" class="delete-button">Delete post</button>
+                    </form>
+                    <form action="{{ url_for('edit_post', id=post.id) }}" class="delete-form">
+                        <button type="submit" class="edit-button">Edit post</button>
+                    </form>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if current_user.is_authenticated %}
+            <div class="add-comment-section">
+                <form method="POST" action="{{ url_for('post_detail', post_id=post.id) }}" class="comment-form" id="comment-form">
+                    <textarea name="content" placeholder="What are your thoughts?" required class="comment-input"></textarea>
+                    <input type="hidden" name="parent_id" id="parent_id" value="" />
+                    <div style="display: flex; align-items: center;">
+                        <button type="submit" class="submit-comment-button">Comment</button>
+                        <button type="button" id="cancel-reply" style="display:none;">Cancel reply</button>
+                    </div>
+                </form>
+            </div>
+        {% endif %}
+
+        <div class="comments-section">
+            <h2 class="comments-title">Comments</h2>
+
+            <div class="comments-container">
+                {% macro render_comment(comment) %}
+                    <div class="comment-item" id="comment-{{ comment.id }}">
+                        <div class="comment-container">
+                            <div class="comment-voting">
+                                <button class="comment-vote-button upvote" title="Upvote">▲</button>
+                                <span class="comment-vote-count">{{ comment.votes|default(0) }}</span>
+                                <button class="comment-vote-button downvote" title="Downvote">▼</button>
+                            </div>
+
+                            <div class="comment-body">
+                                <div class="comment-metadata">
+                                    {% if comment.user.rank >= admins %}
+                                        <a href="{{ url_for('view', owner=comment.user_id) }}" class="comment-author admin">u/{{ comment.user.name }}</a>
+                                    {% else %}
+                                        <a href="{{ url_for('view', owner=comment.user_id) }}" class="comment-author">u/{{ comment.user.name }}</a>
+                                    {% endif %}
+                                    <span> • {{ comment.created_date.strftime('%Y-%m-%d %H:%M:%S') }}</span>
+                                </div>
+
+                                {% if comment.parent %}
+                                    <div class="parent-comment-preview">
+                                        <p><em>In reply to <a href="{{ url_for('view', owner=comment.parent.user_id) }}">u/{{ comment.parent.user.name }}</a>:</em></p>
+                                        <p class="comment-content reply">{{ comment.parent.content }}</p>
+                                        <div class="comment-reply-separator"></div>
+                                    </div>
+                                {% endif %}
+
+                                <p class="comment-content">{{ comment.content }}</p>
+
+                                <div class="comment-actions">
+                                    {% if current_user.is_authenticated %}
+                                        <button class="comment-action-button reply-button" data-comment-id="{{ comment.id }}" data-comment-author="{{ comment.user.name }}">Reply</button>
+                                    {% endif %}
+
+                                    {% if current_user.is_authenticated %}
+                                        {% if current_user.id == comment.user_id or current_user.rank >= admins %}
+                                            <form method="POST" action="{{ url_for('delete_comment', comment_id=comment.id) }}" style="display:inline;">
+                                                <button type="submit" class="delete-button-com">Delete</button>
+                                            </form>
+                                        {% endif %}
+                                    {% endif %}
+
+                                    {% set replies = comment.replies.order_by(Comment.created_date.asc()).all() %}
+                                    {% if replies %}
+                                        <button class="toggle-replies-btn" data-target="replies-{{ comment.id }}">
+                                            Show replies ({{ replies|length }})
+                                        </button>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+
+                        {% set replies = comment.replies.order_by(Comment.created_date.asc()).all() %}
+                        {% if replies %}
+                            <div class="replies-container" id="replies-{{ comment.id }}">
+                                {% for reply in replies %}
+                                    <div class="reply-comment">
+                                        <div class="comment-thread-line"></div>
+                                        {{ render_comment(reply) }}
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                {% endmacro %}
+
+                {% set root_comments = comments | selectattr("parent", "equalto", None) | list %}
+                {% if root_comments %}
+                    {% for comment in root_comments %}
+                        {{ render_comment(comment) }}
+                    {% endfor %}
+                {% else %}
+                    <p class="no-comments">No comments yet. Be the first to share your thoughts!</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <a href="{{ url_for('forum') }}" class="back-link">← Back to Forum</a>
+    </div>
+
+    <script>
+        // Current reply ID from server
+        const replyToCommentId = "{{ reply_to }}";
+
+        document.addEventListener("DOMContentLoaded", function() {
+            // Process post content to handle images and links
+            const postContent = document.querySelector('.post-content');
+            if (postContent) {
+                const content = postContent.innerHTML;
+
+                const imagePattern = /(https?:\/\/[^\s]+(?:\.(?:jpg|jpeg|png|gif|bmp|webp|svg))(\?[^\s]*)?)/gi;
+                const base64Pattern = /data:image\/(?:jpeg|png|gif|bmp|webp|svg\+xml);base64,[^\s]+/gi;
+
+                let updatedContent = content.replace(imagePattern, '<img src="$1" alt="Image" class="post-image">');
+                updatedContent = updatedContent.replace(base64Pattern, '<img src="$&" alt="Base64 Image" class="post-image">');
+
+                updatedContent = updatedContent.replace(/(https?:\/\/[^\s]+)/gi, function(match) {
+                    if (match.match(imagePattern) || match.match(base64Pattern)) {
+                        return match;
+                    }
+                    return `<a href="${match}" target="_blank">${match}</a>`;
+                });
+
+                postContent.innerHTML = updatedContent;
+            }
+
+            // Voting buttons
+            const voteButtons = document.querySelectorAll('.vote-button, .comment-vote-button');
+            voteButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // This is just for demo purposes - in a real app, you'd send a request to the server
+                    const isUpvote = this.classList.contains('upvote');
+                    const container = this.parentElement;
+                    const counter = container.querySelector('.vote-count, .comment-vote-count');
+                    const currentValue = parseInt(counter.textContent);
+
+                    // Toggle class on the button
+                    if (isUpvote) {
+                        if (this.classList.contains('upvoted')) {
+                            this.classList.remove('upvoted');
+                            counter.textContent = currentValue - 1;
+                        } else {
+                            this.classList.add('upvoted');
+                            if (container.querySelector('.downvoted')) {
+                                container.querySelector('.downvoted').classList.remove('downvoted');
+                                counter.textContent = currentValue + 2;
+                            } else {
+                                counter.textContent = currentValue + 1;
+                            }
+                        }
+                    } else {
+                        if (this.classList.contains('downvoted')) {
+                            this.classList.remove('downvoted');
+                            counter.textContent = currentValue + 1;
+                        } else {
+                            this.classList.add('downvoted');
+                            if (container.querySelector('.upvoted')) {
+                                container.querySelector('.upvoted').classList.remove('upvoted');
+                                counter.textContent = currentValue - 2;
+                            } else {
+                                counter.textContent = currentValue - 1;
+                            }
+                        }
+                    }
+                });
+            });
+
+            // Reply functionality
+            const replyButtons = document.querySelectorAll('.reply-button');
+            const parentInput = document.getElementById('parent_id');
+            const commentForm = document.getElementById('comment-form');
+            const cancelReplyBtn = document.getElementById('cancel-reply');
+            const textarea = commentForm ? commentForm.querySelector('textarea[name="content"]') : null;
+
+            if (commentForm && textarea && parentInput && cancelReplyBtn) {
+                replyButtons.forEach(button => {
+                    button.addEventListener('click', () => {
+                        const commentId = button.getAttribute('data-comment-id');
+                        const commentMetadata = button.closest('.comment-body').querySelector('.comment-metadata');
+
+                        // Scroll to comment form
+                        commentForm.scrollIntoView({ behavior: 'smooth' });
+
+                        parentInput.value = commentId;
+                        textarea.focus();
+                        textarea.placeholder = `Reply to ${commentMetadata.textContent.trim()}`;
+
+                        // Add class to comment form to indicate reply mode
+                        commentForm.classList.add('replying');
+                        cancelReplyBtn.style.display = 'inline-block';
+                    });
+                });
+
+                cancelReplyBtn.addEventListener('click', () => {
+                    parentInput.value = '';
+                    textarea.value = '';
+                    textarea.placeholder = "What are your thoughts?";
+                    cancelReplyBtn.style.display = 'none';
+                    commentForm.classList.remove('replying');
+                });
+            }
+
+            // Toggle replies logic
+            document.querySelectorAll('.toggle-replies-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    const targetId = button.getAttribute('data-target');
+                    const container = document.getElementById(targetId);
+                    if (container) {
+                        const isVisible = container.style.display === 'block';
+                        container.style.display = isVisible ? 'none' : 'block';
+                        button.textContent = isVisible
+                            ? `Show replies (${container.children.length})`
+                            : `Hide replies (${container.children.length})`;
+                    }
+                });
+            });
+
+            // Helper function to find parent comment element
+            function findParentComment(el) {
+                let parent = el.parentElement;
+                while (parent && !parent.classList.contains('comment-item')) {
+                    parent = parent.parentElement;
+                }
+                return parent;
+            }
+
+            // Function to expand all parent replies in the comment thread
+            function expandAllParents(commentId) {
+                let currentComment = document.getElementById(`comment-${commentId}`);
+                while (currentComment) {
+                    // Find the parent comment container
+                    const parentCommentContainer = currentComment.closest('.replies-container');
+                    if (parentCommentContainer) {
+                        // Show the replies container
+                        parentCommentContainer.style.display = 'block';
+
+                        // Update the toggle button text
+                        const toggleBtn = document.querySelector(`.toggle-replies-btn[data-target="${parentCommentContainer.id}"]`);
+                        if (toggleBtn) {
+                            toggleBtn.textContent = `Hide replies (${parentCommentContainer.children.length})`;
+                        }
+
+                        // Move up to the next parent
+                        currentComment = findParentComment(parentCommentContainer);
+                    } else {
+                        break;
+                    }
+                }
+            }
+
+            // If there's a reply_to parameter, expand the thread and highlight the comment
+            if (replyToCommentId) {
+                expandAllParents(replyToCommentId);
+                const targetComment = document.getElementById(`comment-${replyToCommentId}`);
+                if (targetComment) {
+                    // Scroll to the comment with offset
+                    const yOffset = window.innerHeight / 4;
+                    const y = targetComment.getBoundingClientRect().top + window.pageYOffset - yOffset;
+                    window.scrollTo({ top: y, behavior: 'smooth' });
+
+                    // Highlight the comment
+                    targetComment.classList.add('highlighted-comment');
+                    setTimeout(() => {
+                        targetComment.classList.remove('highlighted-comment');
+                    }, 3000);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

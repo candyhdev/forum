@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Инвайтики</title>
+</head>
+<style>
+    /* Вариант с разделителями */
+.list-item {
+    padding: 12px 15px;
+}
+
+/* Последний элемент без разделителя */
+.list-item:last-child {
+    border-bottom: none;
+}
+</style>
+<body>
+<h1>---------------------------------------------------</h1>
+<h4>Инвайты (до: {{ time_threshold }} по UTC)</h4>
+{% for item in invlist %}
+    <div class="list-item">#{{ loop.index }} - {{ item }}</div>
+{% endfor %}
+</body>
+</html>

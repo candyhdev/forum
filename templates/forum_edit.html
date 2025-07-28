@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Редактирование поста</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/forum_detals.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/logo.svg') }}" type="image/svg+xml">
+</head>
+<style>
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #1c1c1c; /* Темный фон */
+        color: #ffffff; /* Белый текст */
+        min-height: 100vh;
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        background: radial-gradient(
+            circle,
+            rgba(139, 0, 0, 0.5) 10%,
+            rgba(28, 28, 28, 1) 85%
+        );
+        filter: blur(10px);
+        z-index: -1;
+    }
+
+    .container {
+        animation: fadeIn 0.7s ease;
+        background: rgba(42, 42, 42, 0.5);
+        backdrop-filter: blur(10px);
+        padding: 25px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        max-width: 800px;
+        margin: 20px auto;
+    }
+
+    .main-title {
+        font-size: 28px;
+        color: #ffffff;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+
+    .create-post-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .form-label {
+        font-size: 18px;
+        color: #ffffff;
+    }
+
+    .form-input, .form-textarea {
+        padding: 10px;
+        border: 1px solid #333;
+        border-radius: 5px;
+        background: #262626;
+        color: #e0e0e0;
+        font-size: 16px;
+        transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .form-input:focus, .form-textarea:focus {
+        border-color: #e71818;
+        outline: none;
+        box-shadow: 0 0 8px rgb(255 48 48 / 80%);
+    }
+
+    .submit-button {
+        background: #b30a11;
+        color: #fff;
+        border: none;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        transition: background-color 0.3s;
+    }
+
+    .submit-button:hover {
+        background: #6b070c;
+    }
+
+    .back-link {
+        display: block;
+        text-align: center;
+        color: #f96565;
+        margin-top: 20px;
+        text-decoration: none;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .form-textarea {
+        height: 150px; /* Увеличена высота для textarea */
+    }
+</style>
+<body>
+    <div id="menu-container" class="menu-left">
+        {% include 'menu.html' %}
+    </div>
+
+    <div class="container">
+        <h1 class="main-title">Редактирование поста</h1>
+
+        <form method="POST" action="{{ url_for('edit_post', id=post.id) }}" class="create-post-form">
+            <label for="title" class="form-label">Заголовок:</label>
+            <input type="text" name="title" required class="form-input" value="{{ post.title }}">
+
+            <label for="content" class="form-label">Содержание:</label>
+            <textarea name="content" required class="form-textarea">{{ post.content }}</textarea>
+
+            <button type="submit" class="submit-button">Обновить пост</button>
+        </form>
+
+        <a href="{{ url_for('forum') }}" class="back-link">Назад на главную</a>
+    </div>
+</body>
+</html>

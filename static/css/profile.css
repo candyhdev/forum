@@ -1,0 +1,143 @@
+/* Основной стиль страницы */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #1c1c1c; /* Темный фон */
+    color: #ffffff; /* Белый текст */
+    min-height: 100vh; /* Гарантируем, что body охватывает весь экран */
+    position: relative; /* Для корректного размещения псевдоэлемента */
+    display: flex; /* Устанавливаем flex-контейнер */
+    justify-content: center; /* Горизонтальное центрирование */
+    align-items: center; /* Вертикальное центрирование */
+}
+
+body::before {
+    content: '';
+    position: fixed; /* Фиксируем фон, чтобы он не двигался при прокрутке */
+    inset: 0; /* Охватываем весь экран */
+    background: radial-gradient(
+        circle,
+        rgba(139, 0, 0, 0.5) 10%, /* Темный красный с низкой прозрачностью ближе к центру */
+        rgba(28, 28, 28, 1) 85%   /* Почти черный у краев */
+    );
+    filter: blur(10px); /* Умеренное размытие */
+    z-index: -1; /* Уводим фон за содержимое */
+}
+
+.profile-container {
+    animation: fadeIn 0.7s ease;
+    background-color: rgba(42, 42, 42, 0.5); /* Полупрозрачный фон */
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+    width: 350px;
+    text-align: center;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.1s ease; /* Плавный возврат к исходному положению */
+    transform-style: preserve-3d;    /* Включаем 3D-эффекты */
+    perspective: 1000px;             /* Устанавливаем перспективу для эффекта глубины */
+    transition: box-shadow 0.3s ease; /* Плавный переход тени */
+}
+
+
+.profile-container:hover {
+    box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+}
+
+/* Профильный баннер */
+.profile-banner { /* Переименованный класс */
+    position: relative;
+    height: 150px;
+    overflow: hidden;
+}
+
+.banner-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    filter: blur(1px) brightness(0.9); /* Добавляем размытие и затемнение */
+}
+
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.3); /* Полупрозрачное наложение для затемнения */
+}
+
+/* Аватарка */
+.avatar-section {
+    position: relative;
+    margin-top: -60px; /* Смещение вверх для наложения аватарки на баннер */
+    z-index: 1;
+}
+
+.avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 10px rgba(204, 204, 204, 0.5), 0 0 15px rgba(50, 50, 50, 0.3); /* Пример с цветом аватара */
+}
+
+
+/* Кнопка смены аватарки */
+.change-avatar-button {
+    margin-top: 10px;
+    background-color: #e63946;
+    color: #ffffff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.change-avatar-button:hover {
+    background-color: #d62839;
+}
+
+/* Информация о пользователе */
+.username {
+    font-family: Arial, sans-serif;
+    font-size: 24px;
+    font-weight: bold;
+    line-height: 1.5;
+    color: #e63946;
+    margin-bottom: 10px;
+    z-index: 1;
+}
+
+.rank {
+    font-weight: bold;
+    margin: 5px 0;
+    z-index: 1;
+}
+
+.description {
+    font-size: 14px;
+    color: #bbbbbb;
+    line-height: 1.5;
+    z-index: 1;
+}
+
+.icon {
+    width: 24px; /* Ширина значка */
+    height: 24px; /* Высота значка */
+    margin-right: 8px; /* Расстояние между значком и ником */
+    vertical-align: -5px;
+    position: relative
+}
+
+/* Анимация для появления */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}

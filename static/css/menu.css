@@ -1,0 +1,72 @@
+#menu-container {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 10px 20px;
+    color: #ffffff; /* Белый текст */
+    background-color: transparent; /* Прозрачный фон */
+    z-index: 100; /* Очень высокий z-index, чтобы меню всегда было выше всех элементов */
+    position: fixed; /* Фиксированное позиционирование */
+    top: 0; /* Меню прикреплено к верхней части экрана */
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center; /* Центрируем содержимое по горизонтали */
+}
+
+.banner {
+    background-color: #2a2a2a; /* Цвет фона элемента меню */
+    color: #e63946; /* Красный цвет текста */
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Добавили плавный переход для тени */
+    cursor: pointer;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Добавлена тень */
+}
+
+.banner:hover {
+    transform: scale(1.1); /* Увеличение при наведении */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.7); /* Более глубокая тень при наведении */
+}
+
+.hidden {
+    display: none;
+}
+
+.banner:hover .hidden {
+    display: flex;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.menu-text {
+    display: inline-block;
+    transition: opacity 0.3s ease;
+}
+
+.banner:hover .menu-text {
+    display: none;
+}
+
+.hidden span {
+    cursor: pointer;
+    transition: color 0.3s;
+    margin: 0;
+}
+
+.hidden span:hover {
+    color: #fff;
+}
+
+/* Медиа-запросы для мобильных устройств */
+@media (max-width: 600px) {
+    .banner {
+        padding: 10px;
+        font-size: 14px;
+    }
+}
